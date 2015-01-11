@@ -100,6 +100,7 @@
                     <li><a href="/getting-started/usage/#basic-info">Basic info</a></li>
                     <li><a href="/getting-started/usage/#managing-rooms">Managing rooms</a></li>
                     <li><a href="/getting-started/usage/#authorization-groups">Authorization groups</a></li>
+                    <li><a href="/getting-started/usage/#user-info">User info</a></li>
                   </ul>
                 </li>
                 <li>
@@ -177,6 +178,10 @@
             <p>To see all the current authorization groups and their members:</p>
             <pre><code> You: Lita auth list&#x000A;Lita: karma_admins: You&#x000A;</code></pre>
             <p>In the add and remove commands, the user can be specified by their unique ID, their display name, or their "mention name," on chat services that have such a user property.</p>
+            <h3 id='user-info'>User info</h3>
+            <p>Lita stores a record for each user it encounters with information including their name, their "mention name," and a unique ID that never changes. The <code>config.robot.admins</code> configuration attribute requires the unique IDs of users that should be considered administrators. With some adapters, this ID may not be something you can determine from the chat service's user interface. Fortunately, you can look up the basic information stored for each user by sending the <code>users find</code> command to Lita:</p>
+            <pre><code>You: Lita users find joe&#x000A;Lita: Joe (ID: U92CJ39, Mention name: joe)&#x000A;</code></pre>
+            <p>The value at the end of the <code>users find</code> command is a search term that can be the user's ID, display name, or mention name. If a matching user is found, Lita will reply with the user's information. The ID displayed in the response is the ID that should be used to mark this user as an administrator via the <code>config.robot.admins</code> attribute in the <code>lita_config.rb</code> file.</p>
           </div>
         </div>
       </div>
@@ -192,7 +197,7 @@
         </ul>
         <ul class='nav navbar nav navbar-right'>
           <li>
-            <div class='navbar-text'>© 2014 Lita.io</div>
+            <div class='navbar-text'>© 2015 Lita.io</div>
           </li>
         </ul>
       </div>

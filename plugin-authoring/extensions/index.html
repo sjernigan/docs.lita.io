@@ -113,6 +113,7 @@
                   <ul>
                     <li><a href="/plugin-authoring/extensions/#hooks">Hooks</a></li>
                     <li><a href="/plugin-authoring/extensions/#examples">Examples</a></li>
+                    <li><a href="/plugin-authoring/extensions/#using-extensions">Using Extensions</a></li>
                   </ul>
                 </li>
                 <li>
@@ -190,6 +191,12 @@
             <p>To take advantage of this extension, a handler just needs to access the value added to the response object:</p>
             <pre><code class='ruby'>route(/^sha/i, :sha, command: true)&#x000A;&#x000A;def sha(response)&#x000A;  response.reply("The SHA1 of your message is: #{response.extensions[:sha]}.")&#x000A;end&#x000A;</code></pre>
             For a more detailed example that makes use of both hooks and custom route options, check out <a href="https://github.com/jimmycuadra/lita-keyword-arguments">lita-keyword-arguments</a>.
+            <h3 id='using-extensions'>Using extensions</h3>
+            <p>When using an extension to add functionality to an adapter or handler you're writing, there are a few important "gotchas" to be aware of.</p>
+            <p>Extensions do not "automatically activate" in the same way that adapters and handlers do when Lita is started. To load an extension, add it as a dependency in your plugin's gemspec file and manually <code>require</code> it inside your plugin's code, before the plugin is defined.</p>
+            <p>When testing a handler with Lita's built-in RSpec extras, the <code>Lita::Registry</code> object that stores global state, including which extension hooks are registered, gets reset for each test run. This means that in order for extensions that register hooks to be active during each test run, you need to manually register them in a <code>before</code> block. If the documentation for the extension doesn't specify which hooks it registers, you may need to look at its source code to see for yourself.</p>
+            <p>For example, the <a href="https://github.com/jimmycuadra/lita-keyword-arguments">lita-keyword-arguments</a> extension registers a callback to the <code>:trigger_route</code> hook. In order to activate it in tests, you would add the following code to your <code>spec/spec_helper.rb</code> file:</p>
+            <pre><code class='ruby'>RSpec.configure do |config|&#x000A;  config.before do&#x000A;    registry.register_hook(:trigger_route, Lita::Extensions::KeywordArguments)&#x000A;  end&#x000A;end</code></pre>
           </div>
         </div>
       </div>
@@ -205,7 +212,7 @@
         </ul>
         <ul class='nav navbar nav navbar-right'>
           <li>
-            <div class='navbar-text'>© 2014 Lita.io</div>
+            <div class='navbar-text'>© 2015 Lita.io</div>
           </li>
         </ul>
       </div>
