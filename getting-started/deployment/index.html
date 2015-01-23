@@ -6,7 +6,7 @@
     <link href="/images/favicon.ico" rel="icon" type="image/ico" />
     <title>Getting Started: Deployment - Lita.io</title>
     <meta content='Documentation for Lita, a chat bot written in Ruby.' name='description'>
-    <link href="/stylesheets/application-221b65b4.css" rel="stylesheet" type="text/css" />
+    <link href="/stylesheets/application-dfd32ad8.css" rel="stylesheet" type="text/css" />
     <script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','//www.google-analytics.com/analytics.js','ga');ga('create', 'UA-5500916-13', 'lita.io');ga('send', 'pageview');</script>
   </head>
   <body>
@@ -124,23 +124,36 @@
               <h2>Deployment</h2>
             </div>
             <p>While you can easily run Lita from your own computer, for a more permanent installation you'll want to deploy it to a remote server. Where you deploy Lita is up to you, but there are a few common patterns for deployment.</p>
-            <h3 id='heroku'>Heroku</h3>
+            
+            <h3 id="heroku">Heroku</h3>
+            
             <p>There are a few things worth mentioning when deploying Lita to Heroku:</p>
+            
             <ol>
-              <li>Your Procfile should contain one process:</li>
-              <pre><code>web: bundle exec lita</code></pre>
               <li>
-                To use the Redis To Go add-on and the HTTP port set by Heroku, configure Lita like this:
-                <pre><code class='ruby'>Lita.configure do |config|&#x000A;  config.redis[:url] = ENV["REDISTOGO_URL"]&#x000A;  config.http.port = ENV["PORT"]&#x000A;end</code></pre>
+                <p>Your Procfile should contain one process:</p>
+            
+                <pre><code>web: bundle exec lita&#x000A;</code></pre>
               </li>
-              <li>Consider using a service like <a href="http://www.uptimerobot.com/">Uptime Robot</a> to monitor your Lita instance and keep it from <a href="https://blog.heroku.com/archives/2013/6/20/app_sleeping_on_heroku">sleeping</a> when running on a free dyno. <code>/lita/info</code> is a reliable path to hit from the web to keep it running.</li>
+              <li>
+                <p>To use the Redis To Go add-on and the HTTP port set by Heroku, configure Lita like this:</p>
+            
+                <pre><code class="language-ruby">Lita.configure do |config|&#x000A;  config.redis[:url] = ENV["REDISTOGO_URL"]&#x000A;  config.http.port = ENV["PORT"]&#x000A;end&#x000A;</code></pre>
+              </li>
+              <li>
+                <p>Consider using a service like <a href="http://www.uptimerobot.com/">Uptime Robot</a> to monitor your Lita instance and keep it from <a href="https://blog.heroku.com/archives/2013/6/20/app_sleeping_on_heroku">sleeping</a> when running on a free dyno. <code>/lita/info</code> is a reliable path to hit from the web to keep it running.</p>
+              </li>
             </ol>
-            <h3 id='daemonization'>Daemonization</h3>
-            <div class='alert alert-danger'>
+            
+            <h3 id="daemonization">Daemonization</h3>
+            
+            <div class="alert alert-danger">
               <strong>Warning:</strong>
               This feature is deprecated and will be removed in Lita 5.0. Use your operating system's process manager to daemonize Lita instead.
             </div>
+            
             <p>Lita has built-in support for daemonization on Unix systems. When run as a daemon, Lita will redirect standard output and standard error to a log file, and write the process ID to a PID file. To start Lita as a daemon, run the command: <kbd>lita -d</kbd>.</p>
+            
             <p>There are additional command line flags for specifying the path of the log and PID files, which override the defaults. If an existing Lita process is running when <kbd>lita -d</kbd> is invoked, Lita will abort and leave the original process running, unless the <kbd>-k</kbd> flag is specified, in which case it will kill the existing process. Run the command <kbd>lita help</kbd> for information about all the possible command line flags.</p>
           </div>
         </div>
@@ -162,6 +175,6 @@
         </ul>
       </div>
     </footer>
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js" type="text/javascript"></script><script src="/javascripts/application-8ea00ca6.js" type="text/javascript"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js" type="text/javascript"></script><script src="/javascripts/application-1e915db8.js" type="text/javascript"></script>
   </body>
 </html>
