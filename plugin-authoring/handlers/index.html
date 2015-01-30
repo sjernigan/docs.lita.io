@@ -95,6 +95,7 @@
                     <li><a href="/plugin-authoring/handlers/#helper-methods">Helper methods</a></li>
                     <li><a href="/plugin-authoring/handlers/#timers">Timers</a></li>
                     <li><a href="/plugin-authoring/handlers/#configuration">Configuration</a></li>
+                    <li><a href="/plugin-authoring/handlers/#templates">Templates</a></li>
                     <li><a href="/plugin-authoring/handlers/#examples">Examples</a></li>
                   </ul>
                 </li>
@@ -393,6 +394,52 @@
             <p>This would expose the configuration attribute at <code>Lita.config.handlers.handler_with_config.api_key</code> and users can set a value for it in their <code>lita_config.rb</code> file. The handler can then use the value the user sets by calling <code>config.api_key</code> in any instance method. The <code>config</code> instance method is a convenience accessor equivalent to <code>robot.config.handlers.your_handler_name</code>.</p>
             
             <p>The <code>config</code> class method, shown in the code example above, takes the name of the attribute to create as a Ruby symbol, with a few optional parameters. For full details on using the <code>config</code> method, take a look at the <a href="/plugin-authoring/configuration/">configuration</a> page.</p>
+            
+            <h3 id="templates">Templates</h3>
+            
+            <p>If you want to take advantage of a specific chat service's message formatting, such as bold, colors, or monospaced fonts, you can use Lita's template feature. Templates allow you to put the body of a message response in a separate template file. You can have multiple templates with the same template name, and Lita will automatically pick the appropriate file for the current adapter at runtime. If you're using adapter-specific templates, you should also have a generic fallback template that will be used when an adapter you don't explicitly support is used.</p>
+            
+            <p>Template files should be placed in the <code>templates</code> directory at the root of your plugin. If you generated your plugin with a version of Lita prior to 4.2.0, you'll need to create this directory yourself. Template files are given a unique name and the <code>erb</code> extension. For example, <code>example.erb</code>. To create an adapter-specific version of the same template, include the name of the adapter (as it is specified in <code>config.robot.adapter</code>) as the first file extension. For an IRC-specific template, you would name the file <code>example.irc.erb</code>. This will be selected when Lita is running with the IRC adapter. Otherwise, the generic <code>example.erb</code> will be selected. You can have as many different adapter-specific versions for the same template as you'd like. For example, you could have <code>example.irc.erb</code>, <code>example.hipchat.erb</code>, <code>example.slack.erb</code>, and the fallback <code>example.erb</code>.</p>
+            
+            <p>In order to render a template for an outgoing message, you the handler's <code>render_template</code> method, passing it the name of the template:</p>
+            
+            <pre><code class="language-ruby">module Lita&#x000A;  module Handlers&#x000A;    module HandlerWithTemplates &lt; Handler&#x000A;      route(/example/i, command: true) do |response|&#x000A;        response.reply(render_template("example"))&#x000A;      end&#x000A;    end&#x000A;  end&#x000A;end&#x000A;</code></pre>
+            
+            <p>If we have two template files, <code>example.irc.erb</code> and <code>example.erb</code> with these contents:</p>
+            
+            <pre><code>/me provides an example.&#x000A;</code></pre>
+            
+            <pre><code>Here is an example.&#x000A;</code></pre>
+            
+            <p>Then on IRC, the interaction would look like this:</p>
+            
+            <pre><code> You: Lita, example&#x000A;Lita provides an example.&#x000A;</code></pre>
+            
+            <p>And on any other chat service, it would look like this:</p>
+            
+            <pre><code> You: Lita, example&#x000A;Lita: Here is an example.&#x000A;</code></pre>
+            
+            <p>You should always include a generic version of the template. If you try to render a template that doesn't exist, your handler will crash.</p>
+            
+            <p>Because templates are written in the ERB format, they also support interpolation of variables. The second argument to <code>render_template</code> is a hash of variable name and variable value pairs. Each pair provided will create an instance variable of the given name with the given value that is accessible inside the template. For example, if we had a template named <code>greet.erb</code> with these contents:</p>
+            
+            <pre><code class="language-erb">Hello, &lt;%= @name %&gt;!&#x000A;</code></pre>
+            
+            <p>And we rendered the template like this:</p>
+            
+            <pre><code class="language-ruby">response.reply(render_template("greet", name: "Carl"))&#x000A;</code></pre>
+            
+            <p>The output to the chat would look like this:</p>
+            
+            <pre><code>Hello, Carl!&#x000A;</code></pre>
+            
+            <p>For more information about the ERB format, consult Ruby's standard library documentation or check out <a href="http://www.stuartellis.eu/articles/erb/">An Introduction to ERB Templating</a>.</p>
+            
+            <p>In order to use the <code>render_template</code> method, the handler must have its <code>template_root</code> set to the file path of the templates directory. If you generated your handler with Lita 4.2.0 or greater, this is done for you automatically. Otherwise, you'll need to set it yourself like this:</p>
+            
+            <pre><code class="language-ruby">module Lita&#x000A;  module Handlers&#x000A;    class HandlerWithTemplates &lt; Handler&#x000A;      template_root File.expand_path("../../../../templates", __FILE__)&#x000A;    end&#x000A;  end&#x000A;end&#x000A;</code></pre>
+            
+            <p>Calling <code>render_template</code> without setting the template root will cause your handler to crash.</p>
             
             <h3 id="examples">Examples</h3>
             
