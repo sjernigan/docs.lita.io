@@ -186,6 +186,12 @@
               </li>
             </ul>
             
+            <p>If you need to register additional handlers, for cases when functionality is divided or shared across multiple classes, you can use the <code>:additional_lita_handlers</code> metadata hook:</p>
+            
+            <pre><code class="language-ruby">describe Lita::Handlers::MyHandler, lita_handler: true, additional_lita_handlers: SharedConfig do&#x000A;  # ...&#x000A;end&#x000A;</code></pre>
+            
+            <p>This will register both <code>MyHandler</code> and <code>SharedConfig</code> for each example. The value of <code>:additional_lita_handlers</code> can be a single object or an array of objects.</p>
+            
             <h4 id="testing-routes">Testing routes</h4>
             
             <p>You can test routes of all types very easily using these RSpec matchers:</p>
