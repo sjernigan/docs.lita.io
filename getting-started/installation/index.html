@@ -78,7 +78,7 @@
                 <li>
                   <a href="/getting-started/installation/">Installation</a>
                   <ul>
-                    <li><a href="/getting-started/installation/#vagrant">Vagrant</a></li>
+                    <li><a href="/getting-started/installation/#development-environment">Development Environment</a></li>
                   </ul>
                   <ul>
                     <li><a href="/getting-started/installation/#manual-installation">Manual installation</a></li>
@@ -130,23 +130,72 @@
               <li>Redis, version 2.6 or greater</li>
             </ul>
             
-            <p>If you don't already have a development environment with these dependencies installed, there are two approaches to take to get started with Lita.</p>
+            <p>If you don't already have your own development environment with these dependencies installed, there are two approaches to take to get started with Lita.</p>
             
-            <h3 id="vagrant">Vagrant</h3>
+            <h3 id="development-environment">Lita Development Environment</h3>
             
-            <p>The easiest way to get started with Lita is to use the Vagrant virtual machine provided specifically for Lita development. If you're not familiar with it, Vagrant is a tool for managing complete development environments inside virtual machines. Using Vagrant and the Lita development environment, you can quickly boot a virtual Ubuntu machine with Ruby, Redis, and Lita pre-installed and ready to go. This VM works regardless of what type of computer you use — Linux, Mac OS X, and Windows are all supported by Vagrant. It takes just a few steps:</p>
+            <p>The easiest way to get started with Lita is to use the Lita Development Environment, a virtual machine provided specifically for Lita development. The Lita Development Environment has the same steps to set up on any operating system (OS X, Linux, or Windows) and handles the installation of Ruby, Redis, and Lita for you.</p>
+            
+            <p>To use the Lita Development Environment, follow these steps:</p>
             
             <ol>
-              <li>Install <a href="https://www.vagrantup.com/">Vagrant</a> for your operating system.</li>
-              <li>Install <a href="https://www.virtualbox.org/">VirtualBox</a>, the virtualization software Vagrant uses behind the scenes. (If you're already a Vagrant user and you prefer using a <a href="http://www.vmware.com/">VMware</a> provider, you don't need to install VirtualBox. The Lita development environment supports both providers.)</li>
-              <li>Download and unzip the <a href="https://github.com/litaio/development-environment/archive/master.zip">Lita development environment</a>.</li>
-              <li>In a terminal window, move into the Lita development environment directory, and run <kbd>vagrant up</kbd>. This will download the virtual machine and boot it. The first time you do this it will take a few minutes.</li>
-              <li>Once the VM is finished booting, run <kbd>vagrant ssh</kbd> to connect.</li>
-              <li>Inside the development environment, run <kbd>cd /vagrant</kbd> to move into the shared Vagrant directory. Everything in this directory is shared with the Lita development environment directory on your host system, and changes are reflected immediately.</li>
-              <li>Run <kbd>lita new .</kbd> (note the period) to create a new Lita project. This will generate a Gemfile and Lita configuration file, which is all you need to configure and run Lita. For a full list of possible invocations of the <kbd>lita</kbd> command, run <kbd>lita help</kbd>.</li>
+              <li>
+                <p>Install <a href="https://www.vagrantup.com/">Vagrant</a> for your operating system.</p>
+              </li>
+              <li>
+                <p>Install <a href="https://www.virtualbox.org/">VirtualBox</a>, the virtualization software Vagrant uses behind the scenes. (If you're already a Vagrant user and you prefer using a <a href="http://www.vmware.com/">VMware</a> provider, you don't need to install VirtualBox. The Lita Development Environment supports both providers.)</p>
+              </li>
+              <li>
+                <p>Git clone the repository:</p>
+            
+                <pre><code>git clone https://github.com/litaio/development-environment.git lita-dev&#x000A;</code></pre>
+              </li>
+              <li>
+                <p>Move into the newly cloned repository:</p>
+            
+                <pre><code>cd lita-dev&#x000A;</code></pre>
+              </li>
+              <li>
+                <p>Start the Vagrant VM:</p>
+            
+                <pre><code>vagrant up&#x000A;</code></pre>
+            
+                <p>This will take a few minutes the first time you do it. You'll want to be on a fast, stable Internet connection.</p>
+              </li>
+              <li>
+                <p>SSH into the VM:</p>
+            
+                <pre><code>vagrant ssh&#x000A;</code></pre>
+              </li>
+              <li>
+                <p>Once connected to the VM through SSH, start the Lita Development Environment:</p>
+            
+                <pre><code>lita-dev&#x000A;</code></pre>
+              </li>
             </ol>
             
-            <p>You must interact with the <kbd>lita</kbd> and <kbd>bundle</kbd> commands inside the VM, but you can edit your project files either inside the VM or on your host system with the editor of your choice.</p>
+            <h4>Next steps</h4>
+            
+            <p>At this point, you will find yourself in a shell in a Debian system with Lita already installed.</p>
+            
+            <p>To create a new Lita project, run:</p>
+            
+            <pre><code>lita new .&#x000A;</code></pre>
+            
+            <p>This will generate a Gemfile and a lita_config.rb file, which is all you need to configure and run Lita.</p>
+            
+            <p>For a full list of commands Lita supports, run:</p>
+            
+            <pre><code>lita help&#x000A;</code></pre>
+            
+            <p>You must interact with the <code>lita</code> and <code>bundle</code> commands inside the Lita Development Environment, but you can edit your project files either inside the VM or on your host system with the editor of your choice — the directory you're in inside the Lita Development Environment is shared with the "workspace" directory in the Git repository you cloned on your host system.</p>
+            
+            <p>When you're done, run <kbd>exit</kbd> to leave the Lita Development Environment, then run <kbd>exit</kbd> again to disconnect from the Vagrant VM.</p>
+            
+            <div class="alert alert-info">
+              <strong>Note:</strong>
+              Keep in mind that the Vagrant VM will still be running and using your computer's CPU and memory until you stop it. Stop the Vagrant VM with <kbd>vagrant halt</kbd>. If you want to use it again, just run <kbd>vagrant up</kbd> again to boot it up. If you're completely finished with it and want to remove the VM from your system, run <kbd>vagrant destroy</kbd>.
+            </div>
             
             <h3 id="manual-installation">Manual installation</h3>
             
@@ -176,13 +225,19 @@
             
             <h4>Installing Lita</h4>
             
-            <p>Given that you have working installations of the dependent software (Ruby and Redis), installing Lita is as simple as running the following command in your shell: <kbd>gem install lita</kbd></p>
+            <p>Given that you have working installations of the dependent software (Ruby and Redis), installing Lita is as simple as running the following command in your shell:</p>
             
-            <p>Once Lita is installed, create a new Lita project with this shell command: <kbd>lita new</kbd></p>
+            <pre><code>gem install lita&#x000A;</code></pre>
+            
+            <p>Once Lita is installed, create a new Lita project with this shell command:</p>
+            
+            <pre><code>lita new&#x000A;</code></pre>
             
             <p>This will generate a new directory called "lita" with a Gemfile and Lita configuration file, which is all you need to configure and run Lita.</p>
             
-            <p>For a full list of possible invocations of the <kbd>lita</kbd> command, run <kbd>lita help</kbd>.</p>
+            <p>For a full list of possible invocations of the <code>lita</code> command, run:</p>
+            
+            <pre><code>lita help&#x000A;</code></pre>
             
             <div class="alert alert-info">
               <strong>Note:</strong>
