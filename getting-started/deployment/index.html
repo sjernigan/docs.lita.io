@@ -127,6 +127,11 @@
             
             <h3 id="heroku">Heroku</h3>
             
+            <div class="alert alert-danger">
+              <strong>Warning:</strong>
+              Heroku's free tier has traditionally been a popular place to deploy chat bots. However, <a href="https://blog.heroku.com/archives/2015/5/7/new-dyno-types-public-beta">Heroku is changing their pricing</a> and the free tier can no longer be run all the time. If you choose to deploy to Heroku, you'll either need to sign up for a paid plan, or tolerate some Lita downtime every day.
+            </div>
+            
             <p>There are a few things worth mentioning when deploying Lita to Heroku:</p>
             
             <ol>
@@ -139,9 +144,6 @@
                 <p>To use the Redis To Go add-on and the HTTP port set by Heroku, configure Lita like this:</p>
             
                 <pre><code class="language-ruby">Lita.configure do |config|&#x000A;  config.redis[:url] = ENV["REDISTOGO_URL"]&#x000A;  config.http.port = ENV["PORT"]&#x000A;end&#x000A;</code></pre>
-              </li>
-              <li>
-                <p>Consider using a service like <a href="http://www.uptimerobot.com/">Uptime Robot</a> to monitor your Lita instance and keep it from <a href="https://blog.heroku.com/archives/2013/6/20/app_sleeping_on_heroku">sleeping</a> when running on a free dyno. <code>/lita/info</code> is a reliable path to hit from the web to keep it running.</p>
               </li>
             </ol>
             
