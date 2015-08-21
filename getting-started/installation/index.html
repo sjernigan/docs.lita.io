@@ -6,7 +6,7 @@
     <link href="/images/favicon.ico" rel="icon" type="image/ico" />
     <title>Getting Started: Installation - Lita.io</title>
     <meta content='Documentation for Lita, a chat bot written in Ruby.' name='description'>
-    <link href="/stylesheets/application-50a0576c.css" rel="stylesheet" type="text/css" />
+    <link href="/stylesheets/application-5ebd20a5.css" rel="stylesheet" />
     <script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','//www.google-analytics.com/analytics.js','ga');ga('create', 'UA-5500916-13', 'lita.io');ga('send', 'pageview');</script>
   </head>
   <body>
@@ -126,7 +126,7 @@
             <p>To run Lita, the following software is required:</p>
             
             <ul>
-              <li>Ruby, version 2.0 or greater</li>
+              <li>Ruby, version 2.0 or greater (JRuby 9.0.0.0+ or Rubinius 2+ also work)</li>
               <li>Redis, version 2.6 or greater</li>
             </ul>
             
@@ -201,6 +201,10 @@
             
             <p>Methods for installing Ruby 2.0 vary a lot between systems and are largely beyond the scope of this documentation. However, here are some quick tips for various operating systems:</p>
             
+            <h4>Ruby implementations</h4>
+            
+            <p>Lita works with all the major implementations of Ruby: MRI, JRuby, and Rubinius. The minimum required version of JRuby is 9.0.0.0. The minimum required version of Rubinius is 2.2. Because JRuby does not support fork/exec, Lita's built-in process daemonization will not work, but this feature is going to be removed in the next version of Lita and should not be relied on anyway.</p>
+            
             <h4>Installing Ruby</h4>
             
             <h5>Linux</h5>
@@ -238,11 +242,6 @@
             <p>For a full list of possible invocations of the <code>lita</code> command, run:</p>
             
             <pre><code>lita help&#x000A;</code></pre>
-            
-            <div class="alert alert-info">
-              <strong>Note:</strong>
-              If you are running Lita on JRuby, you'll need to use Ruby 2.0 mode, by invoking lita with <kbd>jruby --2.0 -S lita</kbd> or setting the environment variable <var>JRUBY_OPTS</var> to <var>--2.0</var>
-            </div>
           </div>
         </div>
       </div>
@@ -263,6 +262,6 @@
         </ul>
       </div>
     </footer>
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js" type="text/javascript"></script><script src="/javascripts/application-1e915db8.js" type="text/javascript"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><script src="/javascripts/application-1e915db8.js"></script>
   </body>
 </html>
