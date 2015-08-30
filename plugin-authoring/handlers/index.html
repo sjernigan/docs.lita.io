@@ -82,6 +82,7 @@
                     <li><a href="/plugin-authoring/adapters/#configuration">Configuration</a></li>
                     <li><a href="/plugin-authoring/adapters/#required-methods">Required methods</a></li>
                     <li><a href="/plugin-authoring/adapters/#helper-methods">Helper methods</a></li>
+                    <li><a href="/plugin-authoring/adapters/#chat-service">Chat-service-specific methods</a></li>
                     <li><a href="/plugin-authoring/adapters/#block-syntax">Block syntax</a></li>
                   </ul>
                 </li>
@@ -95,7 +96,7 @@
                     <li><a href="/plugin-authoring/handlers/#helper-methods">Helper methods</a></li>
                     <li><a href="/plugin-authoring/handlers/#timers">Timers</a></li>
                     <li><a href="/plugin-authoring/handlers/#configuration">Configuration</a></li>
-                    <li><a href="/plugin-authoring/handlers/#templates">Templates</a></li>
+                    <li><a href="/plugin-authoring/handlers/#chat-service">Chat-service-specific methods</a></li>
                     <li><a href="/plugin-authoring/handlers/#examples">Examples</a></li>
                   </ul>
                 </li>
@@ -452,6 +453,14 @@
             <pre><code class="language-ruby">module Lita&#x000A;  module Handlers&#x000A;    class HandlerWithTemplates &lt; Handler&#x000A;      template_root File.expand_path("../../../../templates", __FILE__)&#x000A;    end&#x000A;  end&#x000A;end&#x000A;</code></pre>
             
             <p>Calling <code>render_template</code> or <code>render_template_with_helpers</code> without setting the template root will cause your handler to crash.</p>
+            
+            <h3 id="chat-service">Chat-service-specific methods</h3>
+            
+            <p>If templates are not enough to fully grasp the power of the chat services you want to support, you can also use any additional methods exposed through <code>Lita::Robot#chat_service</code>. The return value of this method is <code>nil</code> by default, but some adapters may return a custom object with methods providing access to functionality specific to that chat service. A good example of this is the ability to post "attachments" in Slack – a concept not shared across all chat services and hence not supported directly by the <code>Lita::Robot</code> API. Since chat service methods are specific to the chat service, you'll need to consult the documentation for the adapters you want to support to see if and how they implement this.</p>
+            
+            <p>To actually take advantage of chat-service-specific methods, you should take an approach similar to templates by providing fallback behavior for when your plugin is used with a chat service you're not explicitly providing behavior for. You can use the value of <code>robot.config.robot.adapter</code> to determine which adapter is in use. (Note that within a handler, <code>robot.config</code> is a different value that <code>config</code>. The former is the top-level configuration object and the latter is the configuration for the current handler.)</p>
+            
+            <pre><code class="language-ruby">case robot.config.robot.adapter&#x000A;when :slack&#x000A;  robot.chat_service.send_attachment(target, attachment)&#x000A;when :fancy_chat&#x000A;  robot.chat_service.upload_file(file)&#x000A;else&#x000A;  robot.send_message(target, message)&#x000A;end&#x000A;</code></pre>
             
             <h3 id="examples">Examples</h3>
             
