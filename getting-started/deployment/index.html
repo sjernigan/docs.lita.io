@@ -6,7 +6,7 @@
     <link href="/images/favicon.ico" rel="icon" type="image/ico" />
     <title>Getting Started: Deployment - Lita.io</title>
     <meta content='Documentation for Lita, a chat bot written in Ruby.' name='description'>
-    <link href="/stylesheets/application-5ebd20a5.css" rel="stylesheet" />
+    <link href="/stylesheets/application-24781433.css" rel="stylesheet" />
     <script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','//www.google-analytics.com/analytics.js','ga');ga('create', 'UA-5500916-13', 'lita.io');ga('send', 'pageview');</script>
   </head>
   <body>
@@ -106,6 +106,7 @@
                 <li>
                   <a href="/getting-started/deployment/">Deployment</a>
                   <ul>
+                    <li><a href="/getting-started/deployment/#docker">Docker</a></li>
                     <li><a href="/getting-started/deployment/#heroku">Heroku</a></li>
                     <li><a href="/getting-started/deployment/#daemonization">Daemonization</a></li>
                   </ul>
@@ -123,7 +124,55 @@
             <div class='page-header first-heading'>
               <h2>Deployment</h2>
             </div>
-            <p>While you can easily run Lita from your own computer, for a more permanent installation you'll want to deploy it to a remote server. Where you deploy Lita is up to you, but there are a few common patterns for deployment.</p>
+            <p>While you can easily run Lita from your own computer, for a more permanent installation you'll want to deploy it to a remote server that stays running all the time.</p>
+            
+            <h3 id="docker">Docker</h3>
+            
+            <p>It's recommended that you deploy Lita to a server running <a href="https://www.docker.com/">Docker</a> and <a href="https://wiki.freedesktop.org/www/Software/systemd/">systemd</a>. <a href="https://coreos.com/">CoreOS</a> is a very good choice for a host operating system with these properties. It can run in the most common cloud computing environments, such as Amazon EC2, Google Cloud Platform, and DigitalOcean.</p>
+            
+            <p>An official Docker image is provided for Lita. It can be found on the Docker Hub at <a href="https://hub.docker.com/r/litaio/lita/">litaio/lita</a>. Its source code is available on GitHub at <a href="https://github.com/litaio/docker-lita">litaio/docker-lita</a>.</p>
+            
+            <p>The rest of this section assumes the use of Docker, systemd, and the official Docker image for Lita, but it can be easily adapted to other container runtimes and process management systems.</p>
+            
+            <p>Note that some commands may require the use of <code>sudo</code>, depending on your system.</p>
+            
+            <p>The only configuration in <code>lita_config.rb</code> required for this deployment is the Redis host:</p>
+            
+            <pre><code class="language-ruby">Lita.configure do |config|&#x000A;  config.redis[:host] = "redis"&#x000A;end&#x000A;</code></pre>
+            
+            <p>Add a <code>Dockerfile</code> to the root of your Lita instance with the following contents:</p>
+            
+            <pre><code class="language-Dockerfile">FROM litaio/lita&#x000A;</code></pre>
+            
+            <p>Clone your Lita instance's Git repository on the server where you'll be deploying it. For this guide, we'll clone it to <code>/var/lita</code>.</p>
+            
+            <p>Add a new systemd unit file for Redis at <code>/etc/systemd/system/redis.service</code>:</p>
+            
+            <pre><code class="language-ini">[Unit]&#x000A;Description=The Redis data structure server&#x000A;Requires=docker.service&#x000A;After=docker.service&#x000A;&#x000A;[Service]&#x000A;TimeoutStartSec=0&#x000A;Restart=always&#x000A;ExecStartPre=-/usr/bin/docker kill redis&#x000A;ExecStartPre=-/usr/bin/docker rm redis&#x000A;ExecStartPre=/usr/bin/docker pull litaio/redis&#x000A;ExecStart=/usr/bin/docker run --name redis -v /var/lib/redis:/var/lib/redis litaio/redis&#x000A;ExecStop=/usr/bin/docker stop redis&#x000A;&#x000A;[Install]&#x000A;WantedBy=multi-user.target&#x000A;</code></pre>
+            
+            <p>If the Docker daemon is not being managed by a systemd service named "docker.service" you should remove the "Requires" and "After" lines. You may also need to change the path to the <code>docker</code> executable if it's not located at <code>/usr/bin/docker</code>.</p>
+            
+            <p>Run <code>systemctl start redis</code> and <code>systemctl enable redis</code> to start the Redis service and ensure that it starts automatically if the machine is rebooted.</p>
+            
+            <p>Add a new systemd unit file for your Lita instance at <code>/etc/systemd/system/lita.service</code>:</p>
+            
+            <pre><code class="language-ini">[Unit]&#x000A;Description=My Lita instance&#x000A;Requires=docker.service redis.service&#x000A;After=docker.service redis.service&#x000A;&#x000A;[Service]&#x000A;TimeoutStartSec=0&#x000A;Restart=always&#x000A;ExecStartPre=-/usr/bin/docker kill lita&#x000A;ExecStartPre=-/usr/bin/docker rm lita&#x000A;ExecStart=/usr/bin/docker run --name lita --link redis:redis -v /var/bundle:/var/bundle -p 80:$LITA_HTTP_PORT lita&#x000A;ExecStop=/usr/bin/docker stop lita&#x000A;&#x000A;[Install]&#x000A;WantedBy=multi-user.target&#x000A;</code></pre>
+            
+            <p>Replace <code>$LITA_HTTP_PORT</code> with whichever port you've configured for your Lita instance's HTTP server (the default is 8080 if you haven't set it explicitly). Change "80" to something else if you want Lita's HTTP server to be exposed on the host machine on a non-standard port.</p>
+            
+            <p>Again, if the Docker daemon is not being managed by a systemd service named "docker.service" you should remove the "Requires" and "After" lines. Update the path to the <code>docker</code> executable if necessary.</p>
+            
+            <p>To prepare the initial version of your Lita instance:</p>
+            
+            <pre><code class="language-bash">cd /var/lita&#x000A;git pull&#x000A;docker build -t lita .&#x000A;</code></pre>
+            
+            <p>Then run <code>systemctl start lita</code> and <code>systemctl enable lita</code> to start your Lita instance and ensure that it starts automatically if the machine is rebooted.</p>
+            
+            <p>Lita is now running. To deploy new versions:</p>
+            
+            <pre><code class="language-bash">cd /var/lita&#x000A;git pull&#x000A;docker build -t lita .&#x000A;systemctl restart lita&#x000A;</code></pre>
+            
+            <p>As you deploy new versions, your disk will slowly fill with old Docker images. You may want to remove them periodically by running <code>docker rmi -f dangling=true</code>.</p>
             
             <h3 id="heroku">Heroku</h3>
             
@@ -177,6 +226,6 @@
         </ul>
       </div>
     </footer>
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><script src="/javascripts/application-1e915db8.js"></script>
+    <script src="/javascripts/application-7a3c79c9.js"></script>
   </body>
 </html>
